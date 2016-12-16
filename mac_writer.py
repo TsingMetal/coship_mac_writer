@@ -3,26 +3,28 @@ from mac_to_bin import mac_string_to_bin
 from time import sleep, ctime
 import os
 
-usb_root = 'H:\\'
-
 def main():
     while True:
-        os.system('clear')
-        print("Test starting...")
+        #os.system('clear')
+        print("\nWriting starts...")
+        print("\n(Press Ctrl + C to end programme)")
+
         while True:
             sn = getSn()
             stb_mac = getStbMac()
             eoc_mac = getEocMac()
 
             while eoc_mac == stb_mac:
-                print("EOC_MAC = STB_MAC!! RETRY!!")
+                print("\nEOC_MAC = STB_MAC!! RETRY!!")
                 stb_mac = getStbMac()
                 eoc_mac = getEocMac()
 
+            '''
             next_step = input("\nType 'N' to UNDO 'Y' to CONTINUE => ")
             if 'n' in next_step.lower():
                 onEnd()
                 break
+            '''
 
             if genSnBin(sn) == 1:
                 onEnd()
@@ -34,14 +36,16 @@ def main():
                 onEnd()
                 break
 
-            next_step = input("\nPress 'Enter' to Write SN&MAC")
+            # next_step = input("\nPress 'Enter' to Write SN&MAC")
             log(sn, stb_mac, eoc_mac)
             writeMac()
 
+            '''
             next_step = input("\nType 'N' to re-write 'Y' to end => ")
             while 'n' in next_step.lower(): 
                 writeMac()
                 next_step = input("\nType 'N' to re-write 'Y' to end => ")
+            '''
 
             print("\nWriting completed")
             onEnd()
@@ -73,7 +77,7 @@ def genSnBin(sn):
     footer = b'\x86\x87\x88\x89\x1f'
     sn_bin = bytes(sn, encoding="latin1")
     try:
-        open(usb_root + 'sn.bin', 'wb').write(header + sn_bin + footer)
+        open('sn.bin', 'wb').write(header + sn_bin + footer)
         print('\nGenerate "sn.bin"\tOK')
         sleep(0.5)
         return 0
@@ -86,7 +90,7 @@ def genStbMacBin(mac):
     header = b'\xf1\xf2\xf3\xf4'
     mac_bin = mac_string_to_bin(mac)
     try:
-        open(usb_root + 'mac.bin', 'wb').write(header + mac_bin)
+        open('mac.bin', 'wb').write(header + mac_bin)
         print('\nGenerate "mac.bin"\tOK')
         sleep(0.5)
         return 0
@@ -99,8 +103,8 @@ def genEocMacBin(mac):
     header = b'\xf1\xf2\xf3\xf4'
     mac_bin = mac_string_to_bin(mac)
     try:
-        open(usb_root + 'mac2.bin', 'wb').write(header + mac_bin)
-        print('\nGenerate "mac2.bin"\tOK')
+        open('mac2.bin', 'wb').write(header + mac_bin)
+        print('\nGenerate "mac2.bin"\tOK\n')
         sleep(0.5)
         return 0
     except:
@@ -109,11 +113,29 @@ def genEocMacBin(mac):
         return 1
 
 def writeMac():
-    '''
-    os.system("adb remount")
-    os.system("adb shell")
-    '''
-    os.system("python")
+    print("Trying to remount device...")
+    for i in range(5):
+        result = os.system("adb remount")
+        if result == 0:
+            print("Remount OK")
+            break
+        else:
+            print("Trying to remound device\tretry+" + str(i+1))
+            if i == 4:
+                print("Remount device FAILED after 5 attempts\n" + \
+                    "Please check whether device is correctly connected")
+                return 1;      
+        sleep(1)
+
+    print("\nTrying to write")
+    if os.system("adb push sn.bin /stbinfo") == 0 and \
+            os.system("adb push mac.bin /stbinfo") ==0 and \
+            os.system("adb push mac2.bin /stbinfo") == 0:
+        print("Write OK")
+        return 0
+    else:
+        print("Write FAILED!!")
+        return 1
 
 def log(sn, mac, mac2):
     date = ctime()
@@ -132,7 +154,7 @@ def onEnd(): # End currend circle
     for i in range(3, 0, -1):
         print(i)
         sleep(1)
-    os.system('clear')
+    #os.system('clear')
 
 if __name__ == '__main__':
     main()
