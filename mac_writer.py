@@ -1,5 +1,5 @@
 from hex_string_to_int import hex_char_to_int
-from mac_to_bin import mac_string_to_bin
+from mac_to_bin import mac_string_to_bytes
 from time import sleep, ctime
 import os
 
@@ -88,7 +88,7 @@ def genSnBin(sn):
 
 def genStbMacBin(mac):
     header = b'\xf1\xf2\xf3\xf4'
-    mac_bin = mac_string_to_bin(mac)
+    mac_bin = mac_string_to_bytes(mac)
     try:
         open('mac.bin', 'wb').write(header + mac_bin)
         print('\nGenerate "mac.bin"\tOK')
@@ -101,7 +101,7 @@ def genStbMacBin(mac):
 
 def genEocMacBin(mac):
     header = b'\xf1\xf2\xf3\xf4'
-    mac_bin = mac_string_to_bin(mac)
+    mac_bin = mac_string_to_bytes(mac)
     try:
         open('mac2.bin', 'wb').write(header + mac_bin)
         print('\nGenerate "mac2.bin"\tOK\n')

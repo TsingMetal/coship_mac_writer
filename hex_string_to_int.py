@@ -5,7 +5,7 @@ def hex_char_to_int(char):
     char = char.upper()
     if ord(char) <= ord('9'): return int(char)
 
-    return 10 + ord(char) - ord('A')
+    return 10 + ord(char.upper()) - ord('A')
 
 def hex_string_to_int(string):
     '''
