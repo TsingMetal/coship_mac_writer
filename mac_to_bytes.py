@@ -1,6 +1,6 @@
 from hex_string_to_int import hex_string_to_int
 
-def mac_string_to_bin(mac):
+def mac_string_to_bytes(mac):
     '''
     1, divide a mac string into 4 groups,
     2, each group contains a 2-charactored hex string,

@@ -1,5 +1,5 @@
 from hex_string_to_int import hex_char_to_int
-from mac_to_bin import mac_string_to_bytes
+from mac_to_bytes import mac_string_to_bytes
 from time import sleep, ctime
 import os
 
